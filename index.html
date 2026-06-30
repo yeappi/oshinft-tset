@@ -1,605 +1,148 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>推しNFT</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>OSHI NFT</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=DM+Sans:opsz,wght@9..40,700;9..40,800;9..40,900&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
-  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-  html,body{width:100%;overflow-x:hidden;background:#0a0e1a;}
-  body{font-family:'Noto Sans JP',sans-serif;color:#fff;}
-  .app{max-width:460px;margin:0 auto;position:relative;}
-
-  /* ===== NAV ===== */
-  .nav{
-    position:fixed;top:0;left:50%;transform:translateX(-50%);
-    width:100%;max-width:460px;
-    z-index:50;
-    display:flex;align-items:center;justify-content:space-between;
-    padding:14px 20px;
-    background:rgba(10,14,26,.0);
-  }
-  .nav-ico{font-size:20px;cursor:pointer;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.12);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;}
-  .nav-logo{font-family:'DM Sans',sans-serif;font-weight:900;font-size:15px;letter-spacing:1px;color:rgba(255,255,255,.8);}
-
-  /* ===== DOME SECTION ===== */
-  .dome-section{
-    position:relative;
-    width:100%;
-    padding-top:100%; /* square */
-    overflow:hidden;
-    background:radial-gradient(ellipse at 50% 30%, #2a4a7a 0%, #1a2d54 40%, #0d1a36 100%);
-  }
-  /* stars */
-  .dome-section::before{
-    content:'';position:absolute;inset:0;
-    background-image:
-      radial-gradient(circle, rgba(255,255,255,.9) 1px, transparent 1px),
-      radial-gradient(circle, rgba(255,255,255,.6) 1px, transparent 1px),
-      radial-gradient(circle, rgba(255,255,255,.4) 1px, transparent 1px);
-    background-size:120px 120px, 80px 80px, 50px 50px;
-    background-position:10px 20px, 40px 60px, 25px 10px;
-    opacity:.5;
-  }
-  #domeCanvas{
-    position:absolute;top:0;left:0;width:100%;height:100%;
-  }
-
-  /* avatar circle — porthole */
-  .porthole{
-    position:absolute;
-    bottom:18%;left:50%;transform:translateX(-50%);
-    z-index:10;
-    width:22%;aspect-ratio:1;
-    border-radius:50%;
-  }
-  .porthole-inner{
-    width:100%;height:100%;border-radius:50%;
-    background:radial-gradient(circle at 38% 28%,#fff,#aaccee 70%);
-    border:4px solid rgba(255,255,255,.9);
-    box-shadow:
-      0 0 0 6px rgba(255,255,255,.15),
-      0 0 40px rgba(100,180,255,.4),
-      inset 0 2px 8px rgba(255,255,255,.6);
-    display:flex;align-items:center;justify-content:center;font-size:clamp(24px,7vw,38px);
-  }
-
-  /* dome ring — rank color */
-  .dome-ring{
-    position:absolute;inset:0;
-    border-radius:0;
-    pointer-events:none;
-    z-index:5;
-    box-shadow:inset 0 0 60px rgba(100,180,255,.15);
-  }
-
-  /* nameplate */
-  .nameplate{
-    position:absolute;bottom:4%;left:50%;transform:translateX(-50%);
-    z-index:11;
-    background:rgba(255,255,255,.12);backdrop-filter:blur(16px);
-    border:1px solid rgba(255,255,255,.2);
-    border-radius:999px;
-    padding:8px 20px;
-    display:flex;align-items:center;gap:10px;
-    white-space:nowrap;
-  }
-  .nameplate .nm{font-size:clamp(14px,4vw,18px);font-weight:900;letter-spacing:.5px;}
-  .nameplate .emblem{font-size:clamp(14px,4vw,18px);}
-  .nameplate .rank-badge{
-    font-family:'DM Sans',sans-serif;font-size:10px;font-weight:900;letter-spacing:1.5px;
-    background:linear-gradient(135deg,#FFD966,#FFB020);
-    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  }
-
-  /* ===== STATS SECTION ===== */
-  .stats-section{
-    background:linear-gradient(180deg,#0d1a36 0%,#081224 100%);
-    padding:32px 20px 28px;
-    position:relative;
-  }
-  .stats-section::before{
-    content:'';position:absolute;top:0;left:0;right:0;height:1px;
-    background:linear-gradient(90deg,transparent,rgba(100,180,255,.4),transparent);
-  }
-
-  /* total */
-  .total-wrap{text-align:center;margin-bottom:24px;}
-  .total-lbl{
-    font-size:10px;font-weight:700;letter-spacing:4px;
-    color:rgba(255,255,255,.4);margin-bottom:10px;text-transform:uppercase;
-  }
-  .total-num{
-    font-family:'DM Sans',sans-serif;font-weight:900;
-    font-size:clamp(60px,18vw,88px);line-height:.9;letter-spacing:-4px;
-    font-variant-numeric:tabular-nums;
-    background:linear-gradient(160deg,#fff 0%,#aad4ff 50%,#6699ff 100%);
-    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-    filter:drop-shadow(0 0 24px rgba(100,160,255,.5));
-  }
-  .total-pt{
-    font-family:'DM Sans',sans-serif;font-size:clamp(18px,5vw,24px);font-weight:700;
-    color:rgba(100,180,255,.6);-webkit-text-fill-color:rgba(100,180,255,.6);
-    margin-left:6px;
-  }
-
-  /* period */
-  .period-row{display:flex;gap:10px;margin-bottom:24px;}
-  .period{
-    flex:1;
-    background:rgba(255,255,255,.05);
-    border:1px solid rgba(255,255,255,.08);
-    border-radius:16px;padding:14px 8px;text-align:center;
-  }
-  .period b{
-    font-family:'DM Sans',sans-serif;font-weight:900;font-size:clamp(16px,5vw,22px);
-    display:block;color:#fff;
-  }
-  .period small{font-size:10px;color:rgba(255,255,255,.35);font-weight:700;letter-spacing:1px;margin-top:3px;display:block;}
-
-  /* ranking */
-  .ranking-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
-  .ranking-title{font-size:13px;font-weight:900;color:rgba(255,255,255,.7);letter-spacing:.5px;}
-  .toggle{font-size:11px;color:rgba(255,255,255,.4);cursor:pointer;font-weight:700;padding:5px 12px;background:rgba(255,255,255,.06);border-radius:999px;border:1px solid rgba(255,255,255,.1);}
-  .ranking-list{display:flex;flex-direction:column;gap:8px;margin-bottom:24px;}
-  .rank-item{
-    display:flex;align-items:center;gap:12px;
-    background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
-    border-radius:14px;padding:11px 14px;
-  }
-  .rank-n{font-family:'DM Sans',sans-serif;font-weight:900;font-size:16px;width:22px;color:rgba(255,255,255,.3);}
-  .rank-n.gold{color:#FFB020;text-shadow:0 0 12px rgba(255,176,32,.5);}
-  .rank-av{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
-  .rank-info{flex:1;}
-  .rank-nm{font-size:13px;font-weight:700;}
-  .rank-sub{font-size:11px;color:rgba(255,255,255,.35);margin-top:1px;}
-  .rank-v{font-family:'DM Sans',sans-serif;font-weight:900;font-size:15px;color:#6699ff;}
-
-  /* support btn */
-  .btn-support{
-    width:100%;padding:18px;border:none;border-radius:18px;
-    background:linear-gradient(120deg,#4488ff,#2244cc);
-    color:#fff;font-family:'Noto Sans JP',sans-serif;font-weight:900;font-size:17px;
-    cursor:pointer;letter-spacing:.5px;
-    box-shadow:0 12px 36px rgba(50,100,255,.4),0 4px 12px rgba(50,100,255,.3);
-    transition:transform .15s,box-shadow .15s;
-    margin-bottom:0;
-  }
-  .btn-support:active{transform:scale(.97);}
-
-  /* ===== OCEAN ===== */
-  .ocean{
-    position:relative;
-    padding:40px 16px 80px;
-    background:linear-gradient(180deg,
-      #0a2a20 0%,
-      #083d2c 15%,
-      #065030 35%,
-      #044020 55%,
-      #022a14 75%,
-      #011508 100%
-    );
-    min-height:700px;
-  }
-  /* caustic light effect */
-  .ocean::before{
-    content:'';position:absolute;inset:0;pointer-events:none;
-    background:
-      radial-gradient(ellipse 40% 20% at 20% 10%, rgba(50,220,150,.08), transparent),
-      radial-gradient(ellipse 30% 15% at 80% 25%, rgba(50,220,150,.06), transparent),
-      radial-gradient(ellipse 50% 20% at 50% 5%, rgba(100,255,200,.05), transparent);
-  }
-
-  .ocean-title{
-    font-family:'DM Sans',sans-serif;font-size:11px;font-weight:800;letter-spacing:4px;
-    color:rgba(100,255,180,.4);text-align:center;margin-bottom:28px;text-transform:uppercase;
-  }
-  .ocean-sec-lbl{
-    font-size:10px;font-weight:700;letter-spacing:2px;
-    color:rgba(100,255,180,.35);margin:0 2px 10px;text-transform:uppercase;
-    display:flex;align-items:center;gap:8px;
-  }
-  .ocean-sec-lbl::after{content:'';flex:1;height:1px;background:rgba(100,255,180,.1);}
-
-  .illust-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:28px;}
-
-  .illust{
-    aspect-ratio:1;border-radius:18px;
-    display:flex;flex-direction:column;align-items:center;justify-content:center;
-    position:relative;cursor:pointer;transition:transform .18s;overflow:hidden;
-  }
-  .illust:active{transform:scale(.94);}
-  .illust .emo{font-size:clamp(28px,8vw,40px);line-height:1;margin-bottom:4px;}
-  .illust .price-tag{
-    font-family:'DM Sans',sans-serif;font-size:11px;font-weight:800;
-    letter-spacing:.3px;
-  }
-
-  /* fav — bright, glowing */
-  .illust.fav{
-    background:rgba(255,255,255,.12);
-    border:2px solid rgba(255,255,255,.5);
-    box-shadow:0 0 20px rgba(255,255,255,.15),inset 0 0 20px rgba(255,255,255,.05);
-  }
-  .illust.fav .price-tag{color:rgba(255,255,255,.7);}
-  .illust.fav::after{content:'★';position:absolute;top:7px;right:9px;font-size:11px;color:#FFD966;}
-
-  /* owned */
-  .illust.owned{
-    background:rgba(50,200,140,.1);
-    border:1.5px solid rgba(50,200,140,.35);
-    box-shadow:0 0 14px rgba(50,200,140,.1);
-  }
-  .illust.owned .price-tag{color:rgba(50,200,140,.8);}
-  .illust.owned::after{content:'✓';position:absolute;top:7px;right:9px;font-size:11px;color:rgba(50,200,140,.8);}
-
-  /* not owned — grey, ghostly, beckoning */
-  .illust.shop{
-    background:rgba(255,255,255,.03);
-    border:1.5px solid rgba(255,255,255,.08);
-  }
-  .illust.shop .emo{filter:grayscale(1) brightness(.4);}
-  .illust.shop .price-tag{color:rgba(255,255,255,.25);}
-  /* lock icon */
-  .illust.shop::before{
-    content:'🔒';position:absolute;top:50%;left:50%;
-    transform:translate(-50%,-50%);
-    font-size:clamp(20px,6vw,28px);
-    opacity:.15;
-  }
-  .illust.shop .emo{opacity:.3;}
-
-  /* FLASH */
-  .flash{position:fixed;width:10px;height:10px;border-radius:50%;pointer-events:none;z-index:60;background:#fff;box-shadow:0 0 14px rgba(100,180,255,.9),0 0 28px rgba(100,180,255,.6),0 0 50px rgba(100,180,255,.3);}
-  .toast{position:fixed;left:50%;bottom:calc(28px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(14px);padding:13px 24px;border-radius:999px;background:rgba(255,255,255,.12);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:13px;font-weight:700;opacity:0;transition:.3s;z-index:70;white-space:nowrap;}
-  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-
-  /* SHEET */
-  .sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:50;display:none;align-items:flex-end;justify-content:center;}
-  .sheet-bg.open{display:flex;}
-  .sheet{background:#111827;width:100%;max-width:460px;border-radius:26px 26px 0 0;padding:14px 20px 46px;animation:rise .3s cubic-bezier(.22,1,.36,1);border-top:1px solid rgba(255,255,255,.1);}
-  @keyframes rise{from{transform:translateY(100%);}to{transform:translateY(0);}}
-  .grip{width:38px;height:4px;background:rgba(255,255,255,.15);border-radius:4px;margin:0 auto 20px;}
-  .sheet-title{font-size:17px;font-weight:900;text-align:center;margin-bottom:3px;color:#fff;}
-  .sheet-sub{font-size:12px;color:rgba(255,255,255,.4);text-align:center;margin-bottom:22px;}
-  .gift-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;}
-  .gopt{border-radius:14px;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.08);padding:14px 6px 11px;text-align:center;cursor:pointer;transition:transform .15s,border-color .15s,background .15s;}
-  .gopt:active{transform:scale(.95);}
-  .gopt.sel{border-color:rgba(100,180,255,.6);background:rgba(100,180,255,.1);box-shadow:0 0 0 3px rgba(100,180,255,.1);}
-  .gopt .e{font-size:34px;}
-  .gopt .n{font-size:11px;font-weight:700;margin-top:6px;color:rgba(255,255,255,.7);}
-  .gopt .p{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:800;margin-top:2px;color:rgba(255,255,255,.35);}
-  .send{width:100%;padding:17px;border:none;border-radius:14px;background:linear-gradient(120deg,#4488ff,#2244cc);color:#fff;font-weight:900;font-size:16px;cursor:pointer;box-shadow:0 8px 24px rgba(50,100,255,.4);letter-spacing:.5px;}
-  .send:active{transform:scale(.98);}
-
-  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+:root{--paper:#fbfffd;--ink:#07110e;--ink-soft:rgba(7,17,14,.56);--ink-faint:rgba(7,17,14,.32);--hair:rgba(7,17,14,.13);--hair-strong:rgba(7,17,14,.26);--mint:#6fffe0}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%}
+body{min-height:100vh;background:radial-gradient(circle at 50% -8%,rgba(111,255,224,.22),transparent 32%),linear-gradient(180deg,#fff 0%,#f8fffc 70%,#f2fffa 100%);color:var(--ink);font-family:"Noto Sans JP",sans-serif;-webkit-font-smoothing:antialiased;padding:10px 0 20px}
+.app{width:min(100%,420px);margin:0 auto;padding:0 16px}
+.card,.collection-card{border-radius:2px;background:rgba(255,255,255,.5);outline:1px solid var(--hair);outline-offset:-1px;padding:14px 18px 16px}
+.nav{display:grid;grid-template-columns:20px 1fr 20px;align-items:center}
+.nav-btn{font-size:12px;color:var(--ink-faint)}
+.logo{font-family:"Orbitron",sans-serif;font-weight:600;letter-spacing:.42em;text-align:center;font-size:9px;color:var(--ink-faint)}
+.hero{text-align:center;padding:10px 0 0}
+.avatar-wrap{position:relative;width:112px;height:112px;margin:0 auto}
+.avatar-ring-out{position:absolute;inset:0;border-radius:50%;border:1px solid var(--ink)}
+.avatar-ring-in{position:absolute;inset:7px;border-radius:50%;border:1px solid var(--hair-strong)}
+.avatar-mono{position:absolute;inset:7px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.4);font-family:"Orbitron",sans-serif;font-size:31px;font-weight:700;color:var(--ink-faint)}
+.avatar-tick{position:absolute;width:10px;height:10px;border-color:var(--ink);border-style:solid;border-width:0}
+.avatar-tick.n{top:-1px;left:50%;transform:translateX(-50%);border-top-width:1px}
+.avatar-tick.s{bottom:-1px;left:50%;transform:translateX(-50%);border-bottom-width:1px}
+.avatar-tick.e{right:-1px;top:50%;transform:translateY(-50%);border-right-width:1px}
+.avatar-tick.w{left:-1px;top:50%;transform:translateY(-50%);border-left-width:1px}
+.avatar-dot{position:absolute;right:6px;bottom:6px;width:7px;height:7px;border-radius:50%;background:var(--mint);box-shadow:0 0 7px 1.5px rgba(111,255,224,.85)}
+.name{margin-top:11px;font-size:28px;font-weight:900;letter-spacing:.07em;display:flex;align-items:center;justify-content:center;gap:7px}
+.verify{width:15px;height:15px;border-radius:50%;background:var(--ink);color:var(--mint);font-size:9px;display:grid;place-items:center}
+.id-meta{margin-top:7px;display:flex;align-items:center;justify-content:center;gap:9px}
+.id-tag{font-family:"Orbitron",sans-serif;font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--ink);border:1px solid var(--ink);padding:3px 8px}
+.id-title{font-size:10px;font-weight:700;color:var(--ink-soft);letter-spacing:.04em}
+.score{text-align:center;padding:16px 0 12px}
+.score-rule{width:40px;height:1px;margin:0 auto;background:var(--ink);opacity:.45}
+.score-label{margin-top:9px;font-size:10px;font-weight:700;letter-spacing:.46em;color:var(--ink-soft)}
+.score-num{margin-top:7px;font-family:"Orbitron",sans-serif;font-size:48px;font-weight:800;letter-spacing:-.02em}
+.score-rule.b{margin-top:14px}
+.stats{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--hair)}
+.stat{text-align:center;padding:12px 6px 13px}
+.stat+.stat{border-left:1px solid var(--hair)}
+.stat-title{font-size:9px;font-weight:700;letter-spacing:.1em;color:var(--ink-soft)}
+.stat-main{margin-top:7px;font-family:"Orbitron",sans-serif;font-size:22px;font-weight:700}
+.stat-main small{font-family:"Noto Sans JP",sans-serif;font-size:10px;font-weight:900}
+.stat-sub{margin-top:4px;font-size:8.5px;font-weight:600;color:var(--ink-faint)}
+.stat-sub.faint{opacity:.55;font-size:8px}
+.badges{margin-top:18px;display:grid;grid-template-columns:repeat(5,1fr);gap:6px;text-align:center}
+.badge-mark{position:relative;width:30px;height:30px;margin:0 auto 7px}
+.badge-mark .rim{position:absolute;inset:0;border-radius:50%;border:1px solid var(--hair-strong)}
+.badge-mark .core{position:absolute;inset:7px;border:1.4px solid var(--ink);transform:rotate(45deg)}
+.badge-mark .pip{position:absolute;top:-1px;left:50%;width:4px;height:4px;transform:translateX(-50%);border-radius:50%;background:var(--mint);box-shadow:0 0 5px rgba(111,255,224,.85)}
+.badge-mark.lead .rim{border-color:var(--ink)}
+.badge-mark.lead .pip{width:5px;height:5px;box-shadow:0 0 7px rgba(111,255,224,1)}
+.badge-name{font-size:6.6px;font-weight:700;line-height:1.2;color:var(--ink-soft)}
+.rule{height:1px;margin:12px 0;background:var(--hair)}
+.favorite-title{font-size:10.5px;font-weight:700;letter-spacing:.2em;margin-bottom:9px;text-align:center;color:var(--ink-soft)}
+.fav-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.fav,.piece{position:relative;border:1px solid var(--hair-strong);background:linear-gradient(155deg,rgba(255,255,255,.5),rgba(111,255,224,.08));overflow:hidden}
+.fav{height:62px;display:flex;align-items:flex-end;justify-content:flex-end;padding:8px}
+.fav:before,.piece:before{content:"";position:absolute;top:-1px;left:-1px;width:8px;height:8px;border-top:1px solid var(--ink);border-left:1px solid var(--ink)}
+.fav .art-shine,.piece .art-shine{position:absolute;inset:0;background:radial-gradient(circle at 32% 24%,rgba(255,255,255,.75),transparent 28%),linear-gradient(135deg,rgba(255,255,255,.15),rgba(111,255,224,.12));opacity:.8}
+.fav-num{position:relative;z-index:2;font-family:"Orbitron",sans-serif;font-size:20px;font-weight:800;color:var(--ink)}
+.fav-num small{font-family:"Orbitron",sans-serif;font-size:12px;font-weight:700;color:var(--ink-faint);margin-right:1px}
+.section-title{font-family:"Orbitron",sans-serif;font-size:10px;font-weight:700;letter-spacing:.2em;text-align:center;margin-bottom:10px}
+.podium{display:grid;grid-template-columns:1fr 1.1fr 1fr;align-items:end;text-align:center;gap:5px}
+.pod{display:flex;flex-direction:column;align-items:center}
+.pod-rank{font-family:"Orbitron",sans-serif;font-size:11px;font-weight:700;color:var(--ink-faint);margin-bottom:4px}
+.pod-avatar{border-radius:50%;border:1px solid var(--hair-strong)}
+.pod .pod-avatar{width:22px;height:22px}
+.pod.first .pod-avatar{width:32px;height:32px;border-color:var(--ink)}
+.pod-name{margin-top:4px;font-size:9.5px;font-weight:700}
+.pod-pt{margin-top:1px;font-family:"Orbitron",sans-serif;font-size:8px;font-weight:600;color:var(--ink-faint)}
+.metrics{margin-top:16px;padding-top:12px;border-top:1px solid var(--hair);display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.metric{text-align:center}
+.metric-label{font-size:7px;font-weight:700;color:var(--ink-faint);letter-spacing:.01em}
+.metric-val{margin-top:3px;font-family:"Orbitron",sans-serif;font-size:11.5px;font-weight:600}
+.cta{width:100%;margin-top:20px;height:42px;border:1px solid var(--mint);border-radius:2px;background:var(--ink);color:var(--mint);font-family:"Orbitron","Noto Sans JP",sans-serif;font-size:11.5px;font-weight:700;letter-spacing:.3em;text-shadow:0 0 8px rgba(111,255,224,.5)}
+.collection-card{margin-top:14px;padding:15px 18px 18px}
+.collection-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:12px}
+.collection-title{font-family:"Orbitron",sans-serif;font-size:12px;font-weight:700;letter-spacing:.22em}
+.collection-count{font-family:"Orbitron",sans-serif;font-size:10px;font-weight:700;color:var(--ink-faint)}
+.collection-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.piece{aspect-ratio:1}
+.piece:after{content:"";position:absolute;right:-1px;bottom:-1px;width:7px;height:7px;border-right:1px solid var(--ink);border-bottom:1px solid var(--ink);opacity:.45}
+.piece .qty{position:absolute;right:5px;bottom:4px;z-index:2;font-family:"Orbitron",sans-serif;font-size:10px;font-weight:800;color:var(--ink)}
+.piece.locked{opacity:.42;filter:grayscale(.75)}
+.piece.locked .lock{position:absolute;inset:0;display:grid;place-items:center;font-family:"Orbitron",sans-serif;font-size:14px;font-weight:700;color:var(--ink-soft)}
+.piece.locked .price{position:absolute;left:0;right:0;bottom:4px;text-align:center;font-family:"Orbitron",sans-serif;font-size:8.5px;font-weight:700;color:var(--ink-soft)}
+.collection-note{margin-top:10px;font-size:8.5px;font-weight:700;color:var(--ink-faint);letter-spacing:.08em;text-align:center}
+@media(max-width:380px){.score-num{font-size:46px}.name{font-size:26px}.avatar-wrap{width:100px;height:100px}.collection-grid{gap:7px}}
 </style>
 </head>
 <body>
-<div class="app">
-
-  <div class="nav">
-    <div class="nav-ico">‹</div>
-    <div class="nav-logo">推しNFT</div>
-    <div class="nav-ico">↗</div>
+<main class="app">
+  <div class="card">
+    <header class="nav"><div class="nav-btn">☰</div><div class="logo">OSHI NFT</div><div class="nav-btn">↗</div></header>
+    <section class="hero">
+      <div class="avatar-wrap"><div class="avatar-ring-out"></div><div class="avatar-ring-in"></div><div class="avatar-mono">Y</div><span class="avatar-tick n"></span><span class="avatar-tick s"></span><span class="avatar-tick e"></span><span class="avatar-tick w"></span><div class="avatar-dot"></div></div>
+      <div class="name">やぴ<span class="verify">✓</span></div>
+      <div class="id-meta"><span class="id-tag">赤帯 Ⅷ</span><span class="id-title">赤遠のセンター</span></div>
+    </section>
+    <section class="score"><div class="score-rule"></div><div class="score-label">魅力値</div><div class="score-num">12,483,921</div><div class="score-rule b"></div></section>
+    <section class="stats">
+      <div class="stat"><div class="stat-title">全体ランキング</div><div class="stat-main">1<small>位</small></div><div class="stat-sub">/10,532人中</div></div>
+      <div class="stat"><div class="stat-title">24h応援額</div><div class="stat-main">86,752<small>pt</small></div><div class="stat-sub faint">最高 517,890pt</div></div>
+    </section>
+    <section class="badges">
+      <div><div class="badge-mark"><span class="rim"></span><span class="core"></span><span class="pip"></span></div><div class="badge-name">称号1</div></div>
+      <div><div class="badge-mark"><span class="rim"></span><span class="core"></span><span class="pip"></span></div><div class="badge-name">称号2</div></div>
+      <div><div class="badge-mark lead"><span class="rim"></span><span class="core"></span><span class="pip"></span></div><div class="badge-name">称号3</div></div>
+      <div><div class="badge-mark"><span class="rim"></span><span class="core"></span><span class="pip"></span></div><div class="badge-name">称号4</div></div>
+      <div><div class="badge-mark"><span class="rim"></span><span class="core"></span><span class="pip"></span></div><div class="badge-name">称号5</div></div>
+    </section>
+    <div class="rule"></div>
+    <section><div class="favorite-title">お気に入りの記念</div><div class="fav-grid">
+      <div class="fav"><div class="art-shine"></div><div class="fav-num"><small>×</small>12</div></div>
+      <div class="fav"><div class="art-shine"></div><div class="fav-num"><small>×</small>8</div></div>
+      <div class="fav"><div class="art-shine"></div><div class="fav-num"><small>×</small>24</div></div>
+    </div></section>
+    <div class="rule"></div>
+    <section><div class="section-title">TOP SUPPORTER</div><div class="podium">
+      <div class="pod"><div class="pod-rank">2</div><div class="pod-avatar"></div><div class="pod-name">ゆうと</div><div class="pod-pt">1,876,450</div></div>
+      <div class="pod first"><div class="pod-rank">1</div><div class="pod-avatar"></div><div class="pod-name">りん</div><div class="pod-pt">2,348,710pt</div></div>
+      <div class="pod"><div class="pod-rank">3</div><div class="pod-avatar"></div><div class="pod-name">あや</div><div class="pod-pt">1,420,990</div></div>
+    </div></section>
+    <section class="metrics">
+      <div class="metric"><div class="metric-label">総サポーター</div><div class="metric-val">5,432人</div></div>
+      <div class="metric"><div class="metric-label">総ギフト額</div><div class="metric-val">¥8,765,432</div></div>
+      <div class="metric"><div class="metric-label">連続応援日数</div><div class="metric-val">217日</div></div>
+      <div class="metric"><div class="metric-label">イラスト所持</div><div class="metric-val">143枚</div></div>
+    </section>
+    <button class="cta">応援する</button>
   </div>
-
-  <!-- DOME -->
-  <div class="dome-section" id="domeSection">
-    <canvas id="domeCanvas"></canvas>
-    <div class="dome-ring" id="domeRing"></div>
-    <div class="porthole">
-      <div class="porthole-inner">🦊</div>
+  <section class="collection-card">
+    <div class="collection-head"><div class="collection-title">ILLUST COLLECTION</div><div class="collection-count">30</div></div>
+    <div class="collection-grid">
+      <div class="piece"><div class="art-shine"></div><div class="qty">×12</div></div><div class="piece"><div class="art-shine"></div><div class="qty">×8</div></div><div class="piece"><div class="art-shine"></div><div class="qty">×6</div></div><div class="piece"><div class="art-shine"></div><div class="qty">×3</div></div>
+      <div class="piece"><div class="art-shine"></div><div class="qty">×24</div></div><div class="piece"><div class="art-shine"></div><div class="qty">×18</div></div><div class="piece"><div class="art-shine"></div><div class="qty">×11</div></div><div class="piece"><div class="art-shine"></div><div class="qty">×7</div></div>
+      <div class="piece locked"><div class="lock">⌁</div><div class="price">10k</div></div><div class="piece locked"><div class="lock">⌁</div><div class="price">8k</div></div><div class="piece locked"><div class="lock">⌁</div><div class="price">5k</div></div><div class="piece locked"><div class="lock">⌁</div><div class="price">3.5k</div></div>
+      <div class="piece locked"><div class="lock">⌁</div><div class="price">3k</div></div><div class="piece locked"><div class="lock">⌁</div><div class="price">2.5k</div></div><div class="piece locked"><div class="lock">⌁</div><div class="price">1.8k</div></div><div class="piece locked"><div class="lock">⌁</div><div class="price">800</div></div>
     </div>
-    <div class="nameplate">
-      <span class="emblem">👑</span>
-      <span class="nm">やぴ</span>
-      <span class="rank-badge">STAGE 14</span>
-      <span class="emblem">👑</span>
-    </div>
-  </div>
-
-  <!-- STATS -->
-  <div class="stats-section">
-    <div class="total-wrap">
-      <div class="total-lbl">Total Support</div>
-      <div>
-        <span class="total-num" id="totalNum">0</span><span class="total-pt">pt</span>
-      </div>
-    </div>
-
-    <div class="period-row">
-      <div class="period"><b id="dayNum">0</b><small>TODAY</small></div>
-      <div class="period"><b id="weekNum">0</b><small>WEEK</small></div>
-      <div class="period"><b id="monthNum">0</b><small>MONTH</small></div>
-    </div>
-
-    <div class="ranking-head">
-      <div class="ranking-title">トップサポーター</div>
-      <div class="toggle" id="toggleBtn" onclick="toggleRanking()">非表示</div>
-    </div>
-    <div class="ranking-list" id="rankingList">
-      <div class="rank-item"><div class="rank-n gold">1</div><div class="rank-av">🐧</div><div class="rank-info"><div class="rank-nm">みお</div><div class="rank-sub">42日連続応援中</div></div><div class="rank-v">1,240</div></div>
-      <div class="rank-item"><div class="rank-n">2</div><div class="rank-av">🍓</div><div class="rank-info"><div class="rank-nm">けんと</div><div class="rank-sub">28日連続応援中</div></div><div class="rank-v">980</div></div>
-      <div class="rank-item"><div class="rank-n">3</div><div class="rank-av">🌿</div><div class="rank-info"><div class="rank-nm">さら</div><div class="rank-sub">15日連続応援中</div></div><div class="rank-v">610</div></div>
-    </div>
-
-    <button class="btn-support" onclick="openSheet()">応援する</button>
-  </div>
-
-  <!-- OCEAN -->
-  <div class="ocean">
-    <div class="ocean-title">✦ コレクション ✦</div>
-
-    <div class="ocean-sec-lbl">お気に入り・購入済み</div>
-    <div class="illust-grid">
-      <div class="illust fav"><div class="emo">🌸</div><div class="price-tag">300pt</div></div>
-      <div class="illust fav"><div class="emo">💎</div><div class="price-tag">2,000pt</div></div>
-      <div class="illust fav"><div class="emo">👑</div><div class="price-tag">3,000pt</div></div>
-    </div>
-
-    <div class="ocean-sec-lbl">購入済み</div>
-    <div class="illust-grid">
-      <div class="illust owned"><div class="emo">🔥</div><div class="price-tag">800pt</div></div>
-      <div class="illust owned"><div class="emo">⭐</div><div class="price-tag">800pt</div></div>
-      <div class="illust owned"><div class="emo">🌙</div><div class="price-tag">300pt</div></div>
-    </div>
-
-    <div class="ocean-sec-lbl">未入手 — 高額順</div>
-    <div class="illust-grid">
-      <div class="illust shop"><div class="emo">🐉</div><div class="price-tag">5,000pt</div></div>
-      <div class="illust shop"><div class="emo">🌊</div><div class="price-tag">3,000pt</div></div>
-      <div class="illust shop"><div class="emo">⚡</div><div class="price-tag">1,500pt</div></div>
-      <div class="illust shop"><div class="emo">🎭</div><div class="price-tag">1,200pt</div></div>
-      <div class="illust shop"><div class="emo">🦋</div><div class="price-tag">600pt</div></div>
-      <div class="illust shop"><div class="emo">🍀</div><div class="price-tag">300pt</div></div>
-      <div class="illust shop"><div class="emo">🗡️</div><div class="price-tag">800pt</div></div>
-      <div class="illust shop"><div class="emo">🧿</div><div class="price-tag">1,000pt</div></div>
-      <div class="illust shop"><div class="emo">🌺</div><div class="price-tag">400pt</div></div>
-    </div>
-  </div>
-
-</div>
-
-<div class="toast" id="toast">応援が届きました ✦</div>
-
-<div class="sheet-bg" id="sheetBg" onclick="bgClose(event)">
-  <div class="sheet">
-    <div class="grip"></div>
-    <div class="sheet-title">やぴを応援する</div>
-    <div class="sheet-sub">贈ったイラストはコレクションに永遠に残ります</div>
-    <div class="gift-grid" id="grid">
-      <div class="gopt sel" data-e="🌸" data-p="300"><div class="e">🌸</div><div class="n">ブルーム</div><div class="p">300</div></div>
-      <div class="gopt" data-e="⭐" data-p="800"><div class="e">⭐</div><div class="n">スター</div><div class="p">800</div></div>
-      <div class="gopt" data-e="🔥" data-p="800"><div class="e">🔥</div><div class="n">フレイム</div><div class="p">800</div></div>
-      <div class="gopt" data-e="💎" data-p="2000"><div class="e">💎</div><div class="n">ダイヤ</div><div class="p">2,000</div></div>
-      <div class="gopt" data-e="👑" data-p="3000"><div class="e">👑</div><div class="n">クラウン</div><div class="p">3,000</div></div>
-      <div class="gopt" data-e="🌙" data-p="300"><div class="e">🌙</div><div class="n">ムーン</div><div class="p">300</div></div>
-    </div>
-    <button class="send" onclick="sendGift()">贈る</button>
-  </div>
-</div>
-
-<script>
-// ===== DOME PHYSICS =====
-const canvas = document.getElementById('domeCanvas');
-const ctx = canvas.getContext('2d');
-let W, H, CX, CY, R;
-
-function resizeDome(){
-  const sec = document.getElementById('domeSection');
-  W = sec.offsetWidth; H = sec.offsetHeight;
-  canvas.width = W; canvas.height = H;
-  CX = W/2; CY = H/2; R = Math.min(W,H)/2 * .92;
-}
-resizeDome();
-window.addEventListener('resize', resizeDome);
-
-const ITEMS = ['🌸','💎','👑','🔥','⭐','🌙','🐉','🌊','⚡'];
-let gx=0, gy=.5;
-let particles = [];
-
-for(let i=0;i<16;i++){
-  const angle = Math.random()*Math.PI*2;
-  const dist = Math.random()*(R*.7);
-  particles.push({
-    x: CX + Math.cos(angle)*dist,
-    y: CY + Math.sin(angle)*dist,
-    vx: (Math.random()-.5)*2,
-    vy: (Math.random()-.5)*2,
-    emoji: ITEMS[i%ITEMS.length],
-    size: 32 + Math.random()*20,
-    angle: Math.random()*Math.PI*2,
-    va: (Math.random()-.5)*.03
-  });
-}
-
-// tilt via device
-window.addEventListener('deviceorientation',e=>{
-  gx = (e.gamma||0)/90 * 1.2;
-  gy = Math.max(.1,((e.beta||45)-10)/80);
-},{passive:true});
-
-// tilt via touch/mouse
-let touchActive=false;
-document.getElementById('domeSection').addEventListener('touchmove',e=>{
-  const t=e.touches[0];
-  const rect=canvas.getBoundingClientRect();
-  gx=((t.clientX-rect.left)/W-.5)*2;
-  gy=((t.clientY-rect.top)/H-.5)*1.5+.3;
-  touchActive=true;
-},{passive:true});
-document.addEventListener('mousemove',e=>{
-  const rect=canvas.getBoundingClientRect();
-  if(!rect.width) return;
-  gx=((e.clientX-rect.left)/W-.5)*2;
-  gy=((e.clientY-rect.top)/H-.5)*1.5+.3;
-});
-
-function physicsStep(){
-  const ax = gx*.3, ay = gy*.3;
-  particles.forEach(p=>{
-    p.vx+=ax; p.vy+=ay;
-    p.vx*=.9; p.vy*=.9;
-    p.x+=p.vx; p.y+=p.vy;
-    p.angle+=p.va;
-    // wall bounce
-    const dx=p.x-CX, dy=p.y-CY, dist=Math.sqrt(dx*dx+dy*dy);
-    const wall = R - p.size*.6;
-    if(dist>wall){
-      const nx=dx/dist, ny=dy/dist;
-      const dot=p.vx*nx+p.vy*ny;
-      p.vx-=1.8*dot*nx; p.vy-=1.8*dot*ny;
-      p.x=CX+nx*(wall-.5); p.y=CY+ny*(wall-.5);
-    }
-  });
-}
-
-function drawDome(){
-  ctx.clearRect(0,0,W,H);
-
-  // sky gradient inside
-  const grad = ctx.createRadialGradient(CX,CY*.6,0,CX,CY,R);
-  grad.addColorStop(0,'rgba(100,160,255,.18)');
-  grad.addColorStop(.5,'rgba(50,100,200,.08)');
-  grad.addColorStop(1,'rgba(10,30,80,.0)');
-  ctx.save();
-  ctx.beginPath(); ctx.arc(CX,CY,R,0,Math.PI*2); ctx.clip();
-  ctx.fillStyle=grad; ctx.fillRect(0,0,W,H);
-
-  // particles
-  particles.forEach(p=>{
-    ctx.save();
-    ctx.translate(p.x,p.y);
-    ctx.rotate(p.angle);
-    ctx.font=`${p.size}px serif`;
-    ctx.textAlign='center'; ctx.textBaseline='middle';
-    // glow
-    ctx.shadowColor='rgba(255,255,255,.6)';
-    ctx.shadowBlur=p.size*.4;
-    ctx.globalAlpha=.92;
-    ctx.fillText(p.emoji,0,0);
-    ctx.restore();
-  });
-
-  // dome glass overlay — rim light
-  const rimGrad = ctx.createRadialGradient(CX*0.7,CY*0.5,R*.3,CX,CY,R);
-  rimGrad.addColorStop(0,'rgba(255,255,255,.0)');
-  rimGrad.addColorStop(.7,'rgba(255,255,255,.0)');
-  rimGrad.addColorStop(.88,'rgba(255,255,255,.06)');
-  rimGrad.addColorStop(1,'rgba(255,255,255,.18)');
-  ctx.save();
-  ctx.beginPath(); ctx.arc(CX,CY,R,0,Math.PI*2); ctx.clip();
-  ctx.fillStyle=rimGrad; ctx.fillRect(0,0,W,H);
-
-  // specular highlight
-  ctx.save();
-  ctx.beginPath();
-  ctx.ellipse(CX*.72, CY*.38, R*.18, R*.08, -Math.PI/6, 0, Math.PI*2);
-  const specGrad=ctx.createRadialGradient(CX*.72,CY*.38,0,CX*.72,CY*.38,R*.18);
-  specGrad.addColorStop(0,'rgba(255,255,255,.22)');
-  specGrad.addColorStop(1,'rgba(255,255,255,.0)');
-  ctx.fillStyle=specGrad; ctx.fill();
-  ctx.restore();
-
-  ctx.restore();
-
-  // rank ring — gold glow
-  ctx.save();
-  ctx.beginPath(); ctx.arc(CX,CY,R,0,Math.PI*2);
-  ctx.strokeStyle='rgba(255,210,80,.7)';
-  ctx.lineWidth=5;
-  ctx.shadowColor='rgba(255,180,30,.8)';
-  ctx.shadowBlur=20;
-  ctx.stroke();
-  ctx.restore();
-}
-
-function frame(){
-  physicsStep();
-  drawDome();
-  requestAnimationFrame(frame);
-}
-frame();
-
-// ===== NUMBERS =====
-const fmt=n=>Math.round(n).toLocaleString();
-function animNum(el,to,dur){
-  const s=performance.now();
-  (function tick(t){
-    const p=Math.min((t-s)/dur,1),e=1-Math.pow(1-p,3);
-    el.textContent=fmt(to*e);
-    if(p<1) requestAnimationFrame(tick);
-  })(performance.now());
-}
-window.addEventListener('load',()=>{
-  animNum(document.getElementById('totalNum'),4820,1500);
-  setTimeout(()=>{
-    animNum(document.getElementById('dayNum'),240,900);
-    animNum(document.getElementById('weekNum'),1820,900);
-    animNum(document.getElementById('monthNum'),3610,900);
-  },200);
-});
-
-// ===== RANKING TOGGLE =====
-let rankVisible=true;
-function toggleRanking(){
-  rankVisible=!rankVisible;
-  document.getElementById('rankingList').style.display=rankVisible?'flex':'none';
-  document.getElementById('toggleBtn').textContent=rankVisible?'非表示':'表示';
-}
-
-// ===== SHEET =====
-let selE='🌸',selP=300;
-const sheetBg=document.getElementById('sheetBg');
-document.getElementById('grid').addEventListener('click',e=>{
-  const o=e.target.closest('.gopt');if(!o)return;
-  document.querySelectorAll('.gopt').forEach(x=>x.classList.remove('sel'));
-  o.classList.add('sel');selE=o.dataset.e;selP=parseInt(o.dataset.p);
-});
-function openSheet(){sheetBg.classList.add('open');}
-function bgClose(e){if(e.target===sheetBg)sheetBg.classList.remove('open');}
-
-function sendGift(){
-  sheetBg.classList.remove('open');
-  // add to dome
-  particles.push({
-    x:CX+(Math.random()-.5)*R*.4,
-    y:CY-R*.3,
-    vx:(Math.random()-.5)*4,
-    vy:-3+Math.random()*2,
-    emoji:selE,
-    size:40+Math.random()*14,
-    angle:0,va:.06
-  });
-  if(particles.length>22) particles.shift();
-
-  // flash particles
-  const btn=document.querySelector('.btn-support').getBoundingClientRect();
-  const tgt=document.getElementById('domeSection').getBoundingClientRect();
-  for(let i=0;i<10;i++){
-    const d=document.createElement('div');d.className='flash';
-    const sx=btn.left+btn.width/2-5,sy=btn.top;
-    const tx=tgt.left+tgt.width/2+(Math.random()-.5)*tgt.width*.5;
-    const ty=tgt.top+tgt.height*.4+(Math.random()-.5)*tgt.height*.3;
-    d.style.cssText=`left:${sx}px;top:${sy}px;position:fixed;`;
-    d.animate([
-      {transform:'translate(0,0) scale(.4)',opacity:0},
-      {opacity:1,offset:.12},
-      {opacity:1,offset:.7},
-      {transform:`translate(${tx-sx}px,${ty-sy}px) scale(2.8)`,opacity:0}
-    ],{duration:1000,delay:i*60,easing:'cubic-bezier(.16,.88,.25,1)',fill:'forwards'});
-    document.body.appendChild(d);
-    setTimeout(()=>d.remove(),1500);
-  }
-
-  const t=document.getElementById('toast');
-  t.classList.add('show');
-  clearTimeout(window._t);
-  window._t=setTimeout(()=>t.classList.remove('show'),1600);
-}
-</script>
+    <div class="collection-note">高額所有 → 通常所有 → 高額未所持 → 通常未所持</div>
+  </section>
+</main>
 </body>
 </html>
