@@ -290,6 +290,24 @@ body{min-height:100vh;background:radial-gradient(circle at 50% -8%,rgba(111,255,
   padding-top:26px !important; /* アイコン上の余白を増やす */
 }
 
+
+/* === Trial real icon photo === */
+.avatar-photo{
+  overflow:hidden !important;
+  background:#eef7f4 !important;
+}
+.avatar-photo img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+  object-position:center 38%;
+  transform:scale(1.22);
+}
+.avatar-ring-in{
+  pointer-events:none;
+}
+
 </style>
 </head>
 <body>
@@ -297,7 +315,7 @@ body{min-height:100vh;background:radial-gradient(circle at 50% -8%,rgba(111,255,
   <div class="card">
     <header class="nav"><div class="nav-btn">☰</div><div class="logo">OSHI NFT</div><div class="nav-btn">↗</div></header>
     <section class="hero">
-      <div class="avatar-wrap"><div class="avatar-ring-out"></div><div class="avatar-ring-in"></div><div class="avatar-mono">Y</div><span class="avatar-tick n"></span><span class="avatar-tick s"></span><span class="avatar-tick e"></span><span class="avatar-tick w"></span><div class="avatar-dot"></div></div>
+      <div class="avatar-wrap"><div class="avatar-ring-out"></div><div class="avatar-ring-in"></div><div class="avatar-mono avatar-photo"><img src="oshi_icon_trial.jpeg" alt="やぴ icon"></div><span class="avatar-tick n"></span><span class="avatar-tick s"></span><span class="avatar-tick e"></span><span class="avatar-tick w"></span><div class="avatar-dot"></div></div>
       <div class="rank-plain">赤帯 VIII</div>
       <div class="name">やぴ</div>
       <div class="id-meta tag-row">
