@@ -90,6 +90,206 @@ body{min-height:100vh;background:radial-gradient(circle at 50% -8%,rgba(111,255,
 .piece.locked .price{position:absolute;left:0;right:0;bottom:4px;text-align:center;font-family:"Orbitron",sans-serif;font-size:8.5px;font-weight:700;color:var(--ink-soft)}
 .collection-note{margin-top:10px;font-size:8.5px;font-weight:700;color:var(--ink-faint);letter-spacing:.08em;text-align:center}
 @media(max-width:380px){.score-num{font-size:46px}.name{font-size:26px}.avatar-wrap{width:100px;height:100px}.collection-grid{gap:7px}}
+
+/* === PROFILE COMMENT LAYOUT PATCH ================================
+   大きい魅力値エリアを、本人の温度が出るコメント欄へ。
+   魅力値はランキングと同列に置き、実績として飾る。
+================================================================== */
+.profile-comment{
+  position:relative;
+  margin:16px auto 14px;
+  max-width:286px;
+  text-align:center;
+  color:var(--ink-soft);
+  font-size:12px;
+  line-height:1.72;
+  font-weight:700;
+  letter-spacing:.03em;
+  padding:4px 0 0;
+}
+.profile-comment .comment-mark{
+  position:absolute;
+  left:50%;
+  top:-15px;
+  transform:translateX(-50%);
+  font-family:"Orbitron",sans-serif;
+  font-size:20px;
+  line-height:1;
+  color:rgba(7,17,14,.16);
+}
+.profile-comment:after{
+  content:"";
+  display:block;
+  width:34px;
+  height:1px;
+  margin:10px auto 0;
+  background:linear-gradient(90deg,transparent,var(--hair-strong),transparent);
+}
+.stat-charm .stat-main{
+  font-size:24px;
+  letter-spacing:-.04em;
+  color:#0a6b55;
+  text-shadow:0 0 10px rgba(111,255,224,.18);
+}
+.stat-charm .stat-sub{
+  font-family:"Orbitron",sans-serif;
+  letter-spacing:.12em;
+}
+.metrics .metric:nth-child(3) .metric-val{
+  color:#0a6b55;
+}
+@media(max-width:380px){
+  .profile-comment{
+    font-size:11.5px;
+    margin-top:14px;
+    margin-bottom:12px;
+  }
+  .stat-charm .stat-main{
+    font-size:21px;
+  }
+}
+
+
+/* === FLOATING SUPPORT BUTTON =====================================
+   応援するボタンを常時右下へ。小さく、邪魔しないが押せる存在感。
+================================================================== */
+.cta{
+  position:fixed !important;
+  right:max(14px,calc((100vw - 420px)/2 + 14px)) !important;
+  bottom:calc(16px + env(safe-area-inset-bottom)) !important;
+  width:92px !important;
+  height:42px !important;
+  margin:0 !important;
+  z-index:50 !important;
+  border-radius:999px !important;
+  border:1px solid var(--mint) !important;
+  background:rgba(7,17,14,.94) !important;
+  color:var(--mint) !important;
+  font-family:"Orbitron","Noto Sans JP",sans-serif !important;
+  font-size:10.5px !important;
+  font-weight:800 !important;
+  letter-spacing:.12em !important;
+  text-shadow:0 0 8px rgba(111,255,224,.55) !important;
+  box-shadow:
+    0 10px 24px rgba(7,17,14,.18),
+    inset 0 0 0 1px rgba(111,255,224,.14) !important;
+}
+.app{
+  padding-bottom:72px !important;
+}
+
+
+/* === SIMPLE RANK + TAG CAPSULE FIX ===============================
+   名前は素のまま。認証チェックなし。
+   赤帯は名前の上に小さく表示するだけ。
+   称号/肩書きは小さいカプセルタグとして複数表示。
+================================================================== */
+.rank-plain{
+  margin-top:9px;
+  text-align:center;
+  font-family:"Orbitron",sans-serif;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.12em;
+  color:rgba(7,17,14,.56);
+}
+.name{
+  margin-top:7px !important;
+  padding:0 !important;
+  width:auto !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  font-family:"Noto Sans JP",sans-serif !important;
+  font-size:28px !important;
+  font-weight:900 !important;
+  letter-spacing:.07em !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:0 !important;
+}
+.name:before,
+.name:after,
+.verify{
+  display:none !important;
+  content:none !important;
+}
+.id-meta.tag-row{
+  margin-top:8px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:5px !important;
+  flex-wrap:nowrap;
+  overflow:hidden;
+  padding:0 2px 1px;
+}
+.id-meta.tag-row .tag-chip{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 auto;
+  border:1px solid rgba(7,17,14,.18);
+  border-radius:999px;
+  padding:3px 8px 4px;
+  font-size:8px;
+  font-weight:800;
+  line-height:1;
+  letter-spacing:.04em;
+  background:transparent;
+  color:rgba(7,17,14,.54);
+}
+.tag-chip.rare{
+  color:rgba(7,17,14,.78) !important;
+  border-color:rgba(7,17,14,.32) !important;
+}
+.tag-chip.high{
+  color:rgba(7,17,14,.60) !important;
+}
+.tag-chip.mid{
+  color:rgba(7,17,14,.48) !important;
+}
+.tag-chip.low{
+  color:rgba(7,17,14,.34) !important;
+  border-color:rgba(7,17,14,.12) !important;
+}
+/* old meta styles should not affect new chips */
+.id-tag,
+.id-title{
+  display:none !important;
+}
+@media(max-width:380px){
+  .rank-plain{font-size:9px;}
+  .id-meta.tag-row .tag-chip{
+    font-size:7.3px;
+    padding:3px 6px 4px;
+  }
+}
+
+
+/* === FINAL SPACING FIX: icon -> rank / rank -> name === */
+.hero{
+  padding-top:10px !important;
+}
+.rank-plain{
+  margin-top:18px !important;   /* アイコン〜赤帯を広げる */
+  margin-bottom:-1px !important; /* 赤帯〜名前を詰める */
+  font-size:8px !important;      /* 赤帯を小さく */
+  letter-spacing:.16em !important;
+  color:rgba(7,17,14,.48) !important;
+}
+.name{
+  margin-top:0 !important;       /* 赤帯〜名前をさらに詰める */
+}
+
+
+/* === Avatar upper spacing tweak === */
+.hero{
+  padding-top:26px !important; /* アイコン上の余白を増やす */
+}
+
 </style>
 </head>
 <body>
@@ -98,13 +298,22 @@ body{min-height:100vh;background:radial-gradient(circle at 50% -8%,rgba(111,255,
     <header class="nav"><div class="nav-btn">☰</div><div class="logo">OSHI NFT</div><div class="nav-btn">↗</div></header>
     <section class="hero">
       <div class="avatar-wrap"><div class="avatar-ring-out"></div><div class="avatar-ring-in"></div><div class="avatar-mono">Y</div><span class="avatar-tick n"></span><span class="avatar-tick s"></span><span class="avatar-tick e"></span><span class="avatar-tick w"></span><div class="avatar-dot"></div></div>
-      <div class="name">やぴ<span class="verify">✓</span></div>
-      <div class="id-meta"><span class="id-tag">赤帯 Ⅷ</span><span class="id-title">赤遠のセンター</span></div>
+      <div class="rank-plain">赤帯 VIII</div>
+      <div class="name">やぴ</div>
+      <div class="id-meta tag-row">
+        <span class="tag-chip rare">赤遠のセンター</span>
+        <span class="tag-chip high">神推し認定</span>
+        <span class="tag-chip mid">伝説のアイコン</span>
+        <span class="tag-chip low">最高の座</span>
+      </div>
     </section>
-    <section class="score"><div class="score-rule"></div><div class="score-label">魅力値</div><div class="score-num">12,483,921</div><div class="score-rule b"></div></section>
+    <section class="profile-comment">
+      <div class="comment-mark">“</div>
+      <p>今日も見つけてくれてありがとう。<br>ここが、わたしのいちばん光る場所。</p>
+    </section>
     <section class="stats">
       <div class="stat"><div class="stat-title">全体ランキング</div><div class="stat-main">1<small>位</small></div><div class="stat-sub">/10,532人中</div></div>
-      <div class="stat"><div class="stat-title">24h応援額</div><div class="stat-main">86,752<small>pt</small></div><div class="stat-sub faint">最高 517,890pt</div></div>
+      <div class="stat stat-charm"><div class="stat-title">魅力値</div><div class="stat-main">12,483,921</div><div class="stat-sub faint">CHARISMA</div></div>
     </section>
     <section class="badges">
       <div><div class="badge-mark"><span class="rim"></span><span class="core"></span><span class="pip"></span></div><div class="badge-name">称号1</div></div>
@@ -128,7 +337,7 @@ body{min-height:100vh;background:radial-gradient(circle at 50% -8%,rgba(111,255,
     <section class="metrics">
       <div class="metric"><div class="metric-label">総サポーター</div><div class="metric-val">5,432人</div></div>
       <div class="metric"><div class="metric-label">総ギフト額</div><div class="metric-val">¥8,765,432</div></div>
-      <div class="metric"><div class="metric-label">連続応援日数</div><div class="metric-val">217日</div></div>
+      <div class="metric"><div class="metric-label">24h応援</div><div class="metric-val">86,752pt</div></div>
       <div class="metric"><div class="metric-label">イラスト所持</div><div class="metric-val">143枚</div></div>
     </section>
     <button class="cta">応援する</button>
